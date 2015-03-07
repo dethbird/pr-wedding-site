@@ -37,7 +37,7 @@
 	use Symfony\Component\Yaml\Yaml;
 	use Guzzle\Http\Client;
 
-	$configs = Yaml::parse(file_get_contents("configs/config.yml"));
+	$configs = Yaml::parse(file_get_contents("../configs/config.yml"));
 	$httpClient = new Client;
 
 
@@ -96,32 +96,13 @@
 
 	$app = new \Slim\Slim(array(
     	'view' => new Slim\Views\Twig(),
-    	'templates.path' => __DIR__ . '/view',
+    	'templates.path' => __DIR__ . '/../view',
 	));
 	$view = $app->view();
 	$view->parserExtensions = array(
 	    new \Slim\Views\TwigExtension(),
 	    new AcmeExtension()
 	);
-
-
- 	$response = $httpClient->createRequest(
-                    "GET",
-                    $configs['app']['api_url']."?api_key=".$configs['app']['api_key']
-                )->send();
- 	$siteData = json_decode($response->getBody(true));
-
- 	function fetchData($endpoint, $id){
- 		global $configs, $httpClient;
-
-	 	$response = $httpClient->createRequest(
-                    "GET",
-                    $configs['app']['api_url']."/".$endpoint."?id=".$id."&api_key=".$configs['app']['api_key']
-                )->send();
- 		$data = json_decode($response->getBody(true));
- 		return $data[0];
-
- 	}
 
 
 	/**
@@ -133,135 +114,21 @@
 	*         \/                           \//_____/  	
 	*/
 
-	$app->get('/', function () use ($app, $siteData, $configs, $httpClient) {
+	$app->get('/', function () use ($app) {
 		
-		//get recent activity
-		$response = $httpClient->createRequest(
-            "GET",
-            $configs['app']['recent_activity_url']
-    	)->send();
- 		$recentActivity = json_decode($response->getBody(true));
-
 	    $app->render('partials/home.html.twig', array(
-		    	'siteData' => $siteData,
-		    	'section'=>'index',
-		    	'recentActivity' => $recentActivity->data
+		    	'section'=>'index'
     		)
 	    );
 	});
 
-	$app->get('/connect', function () use ($app, $siteData) {
-
-	    $app->render('partials/connect.html.twig', array(
-		    	'siteData' => $siteData,
-		    	'section'=>'connect'
+	$app->get('/rsvp', function () use ($app) {
+		
+	    $app->render('partials/rsvp.html.twig', array(
+		    	'section'=>'index'
     		)
 	    );
 	});
-
-	$app->get('/services', function () use ($app, $siteData) {
-
-	    $app->render('partials/services.html.twig', array(
-		    	'siteData' => $siteData,
-		    	'section'=>'services'
-    		)
-	    );
-	});
-
-	$app->get('/about', function () use ($app, $siteData) {
-
-	    $app->render('partials/about.html.twig', array(
-		    	'siteData' => $siteData,
-		    	'section'=>'about'
-    		)
-	    );
-	});
-
-
-	$app->get('/galleries/:id', function ($id) use ($app, $siteData) {
-	    $app->render('partials/gallery.html.twig', array('siteData' => $siteData, 'data'=>fetchData("galleries", $id), 'section'=>'art'));
-	});
-
-	$app->get('/gallery/:section/:name', function ($section, $name) use ($app, $siteData, $configs) {
-
-		if (!isset($configs['galleries'][$section][$name])) {
-			$app->notFound();
-		}
-
-		$gallery = $configs['galleries'][$section][$name];
-
-	    $app->render(
-	    	'partials/gallery_decorated.html.twig',
-	    	array(
-	    		'siteData' => $siteData,
-	    		'gallery' => $gallery,
-	    		'data'=>fetchData(
-	    			"galleries",
-	    			$gallery['galleryId']),
-	    		'section'=>'art'
-    		)
-    	);
-	});
-
-	$app->get('/archive/:section/:name', function ($section, $name) use ($app, $siteData, $configs) {
-
-		if (!isset($configs['archive'][$section][$name])) {
-			$app->notFound();
-		}
-
-		$gallery = $configs['archive'][$section][$name];
-
-	    $app->render(
-	    	'partials/gallery_decorated.html.twig',
-	    	array(
-	    		'siteData' => $siteData,
-	    		'gallery' => $gallery,
-	    		'data'=>fetchData(
-	    			"galleries",
-	    			$gallery['galleryId']),
-	    		'section'=>'archive'
-    		)
-    	);
-	});
-
-	$app->get('/contents/:id', function ($id) use ($app, $siteData) {
-	    $app->render('partials/content.html.twig', array('siteData' => $siteData, 'data'=>fetchData("contents", $id), 'section'=>'art'));
-	});
-
-	$app->get('/comic/:series/:slug', function ($series, $slug) use ($app, $siteData, $configs) {
-
-		if (!isset($configs['comics'][$series][$slug])) {
-			$app->notFound();
-		}
-
-		$comic = $configs['comics'][$series][$slug];
-
-	    $app->render(
-	    	'partials/comic.html.twig',
-	    	array(
-	    		'siteData' => $siteData,
-	    		'comic' => $comic,
-	    		'data'=>fetchData(
-	    			"contents",
-	    			$comic['contentId']),
-	    		'section'=>'comics'
-    		)
-    	);
-	});
-
-	$app->get('/comics/:id', function ($id) use ($app, $siteData) {
-	    $app->render('partials/title.html.twig', array('siteData' => $siteData, 'data'=>fetchData("titles", $id), 'section'=>'comics'));
-	});
-
-	$app->get('/issues/:id', function ($id) use ($app, $siteData) {
-	    $app->render('partials/issue.html.twig', array('siteData' => $siteData, 'data'=>fetchData("issues", $id), 'section'=>'comics'));
-	});
-
-	$app->get('/blogs/:id', function ($id) use ($app, $siteData) {
-	    $app->render('partials/feed.html.twig', array('siteData' => $siteData, 'data'=>fetchData("feeds", $id), 'section'=>'blogs'));
-	});
-
-
 
 	/**
 	* __________            ._._._.
