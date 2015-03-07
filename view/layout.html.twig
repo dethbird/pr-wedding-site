@@ -48,15 +48,33 @@
 
   <!-- Collect the nav links, forms, and other content for toggling -->
   <div class="collapse navbar-collapse" id="gallery-navbar-collapse">
-    <ul class="nav navbar-nav">
+    <ul class="nav navbar-nav">      
+      <li class="{%if section=='prutha'%} active{%endif%}">
+        <a href="/prutha"> Prutha </a>
+      </li>
+      <li class="{%if section=='rishi'%} active{%endif%}">
+        <a href="/rishi"> Rishi </a>
+      </li>
+      <li class="{%if section=='story'%} active{%endif%}">
+        <a href="/story"> Our Story </a>
+      </li>
+      <li class="{%if section=='details'%} active{%endif%}">
+        <a href="/details"> Wedding Details </a>
+      </li>
       <li class="{%if section=='location'%} active{%endif%}">
         <a href="/location"> Location </a>
+      </li>
+      <li class="{%if section=='gallery'%} active{%endif%}">
+        <a href="/gallery"> Gallery </a>
+      </li>
+      <li class="{%if section=='store'%} active{%endif%}">
+        <a href="http://society6.com/dethbird/prints" target="_blank"> Registry </a>
       </li>
       <li class="{%if section=='rsvp'%} active{%endif%}">
         <a href="/rsvp"> RSVP </a>
       </li>
-      <li class="{%if section=='store'%} active{%endif%}">
-        <a href="http://society6.com/dethbird/prints" target="_blank"> Registry </a>
+      <li class="{%if section=='contact'%} active{%endif%}">
+        <a href="/contact"> Contact Us </a>
       </li>
     </ul>
   </div><!-- /.navbar-collapse -->
