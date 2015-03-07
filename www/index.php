@@ -122,10 +122,18 @@
 	    );
 	});
 
+	$app->get('/location', function () use ($app) {
+		
+	    $app->render('partials/location.html.twig', array(
+		    	'section'=>'location'
+    		)
+	    );
+	});
+
 	$app->get('/rsvp', function () use ($app) {
 		
 	    $app->render('partials/rsvp.html.twig', array(
-		    	'section'=>'index'
+		    	'section'=>'rsvp'
     		)
 	    );
 	});
