@@ -1,6 +1,4 @@
-rishisatsangi.com
+wedding website
 =================
 
-Rishi Satsangi's website
-
-experimentations !!!
+A wedding website
